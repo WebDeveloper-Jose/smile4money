@@ -1,7 +1,8 @@
 import React, { useState, useCallback } from 'react';
+import { APP_NETWORK_CONFIG } from '../config/network';
+import { EligibilityNotice } from './EligibilityNotice';
 import { Address } from '@stellar/stellar-sdk';
 import { validateAndConvertXlmToStroops, countDecimalPlaces } from '../utils/xlm-precision';
-import { APP_NETWORK_CONFIG } from '../config/network';
 
 type Platform = 'lichess' | 'chesscom';
 type TokenType = 'xlm' | 'usdc';
@@ -318,6 +319,7 @@ export function CreateMatch({
   return (
     <div className="create-match" data-testid="create-match">
       <h2 className="create-match-title">Create New Match</h2>
+      <EligibilityNotice />
 
       {matchId && (
         <div className="match-result" data-testid="match-success">
