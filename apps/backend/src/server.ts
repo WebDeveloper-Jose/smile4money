@@ -10,6 +10,7 @@ import ChessPlatformPoller from './services/game-poller.js';
 import { getCurrentLedger } from './services/stellar.js';
 import { retryDlqSubmission, type OracleSubmission } from './services/oracle-submit.js';
 import { createShutdownHandler } from './shutdown.js';
+import { resolveNetworkConfig } from './config/network.js';
 import logger from './logger.js';
 
 const port = Number(process.env.PORT || 4000);
@@ -61,6 +62,14 @@ async function retryOracleSubmission(entry: DlqEntry): Promise<void> {
 
 async function main() {
   try {
+    // #118 — fail fast on a network identity conflict (e.g. mainnet with the
+    // testnet RPC, or another network's contract id) before touching any store.
+    const network = resolveNetworkConfig(process.env);
+    logger.info(
+      { network: network.network, rpc_url_overridden: network.rpcUrlOverridden },
+      'stellar_network_resolved',
+    );
+
     // Initialize the persistent queue store
     await initializeQueue();
     logger.info('Queue store initialized');
